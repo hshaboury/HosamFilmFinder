@@ -17,14 +17,6 @@
   }
 }
 
-@keyframes spin-slow {
-  0% { transform: rotate(0deg);}
-  100% { transform: rotate(360deg);}
-}
-.animate-spin-slow {
-  animation: spin-slow 2s linear infinite;
-}
-
 @layer utilities {
   .btn-primary {
     background-color: var(--color-primary);
@@ -34,11 +26,11 @@
     border-radius: 0.5rem;
     transition: background-color 0.2s;
   }
-
+  
   .btn-primary:hover {
     background-color: var(--color-primary-dark);
   }
-
+  
   .btn-secondary {
     background-color: var(--color-dark-lighter);
     color: white;
@@ -47,11 +39,11 @@
     border-radius: 0.5rem;
     transition: background-color 0.2s;
   }
-
+  
   .btn-secondary:hover {
     background-color: var(--color-dark-light);
   }
-
+  
   .card {
     background-color: var(--color-dark-lighter);
     border-radius: 0.5rem;
@@ -59,8 +51,31 @@
     overflow: hidden;
     transition: transform 0.2s;
   }
-
+  
   .card:hover {
     transform: scale(1.05);
   }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-fadeIn {
+    animation: fadeIn 0.5s ease-out;
+  }
+
+  @keyframes spin-slow {
+  0% { transform: rotate(0deg);}
+  100% { transform: rotate(360deg);}
+}
+.animate-spin-slow {
+  animation: spin-slow 2s linear infinite;
+}
 }

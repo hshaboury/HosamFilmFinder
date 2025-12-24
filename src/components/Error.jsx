@@ -1,23 +1,93 @@
-export default function Error({ message }) {
+export default function Error({ message, error, onRetry }) {
+  // Determine error type and icon
+  const getErrorDisplay = () => {
+    if (error?.type === 'NO_RESULTS') {
+      return {
+        icon: '🔍',
+        title: 'No Results Found',
+        suggestions: [
+          'Check your spelling',
+          'Try different keywords',
+          'Use more general terms'
+        ]
+      };
+    }
+    
+    if (error?.type === 'TOO_MANY_RESULTS') {
+      return {
+        icon: '📝',
+        title: 'Too Many Results',
+        suggestions: [
+          'Be more specific with your search',
+          'Add the year or actor name',
+          'Try using the full movie title'
+        ]
+      };
+    }
+    
+    if (error?.type === 'NETWORK_ERROR') {
+      return {
+        icon: '🔌',
+        title: 'Network Error',
+        suggestions: [
+          'Check your internet connection',
+          'Try again in a moment'
+        ],
+        canRetry: true
+      };
+    }
+    
+    if (error?.type === 'API_ERROR') {
+      return {
+        icon: '⚠️',
+        title: 'API Error',
+        suggestions: [
+          'The service might be temporarily unavailable',
+          'Please try again later'
+        ],
+        canRetry: true
+      };
+    }
+    
+    // Default error
+    return {
+      icon: '⚠️',
+      title: 'Something Went Wrong',
+      suggestions: ['Please try again'],
+      canRetry: true
+    };
+  };
+
+  const errorDisplay = getErrorDisplay();
+  const errorMessage = error?.message || message || 'An unexpected error occurred';
+
   return (
     <div className="flex flex-col items-center justify-center min-h-[400px] text-center px-4">
-      <div className="text-red-500 mb-4">
-        <svg
-          className="w-16 h-16 mx-auto"
-          fill="none"
-          stroke="currentColor"
-          viewBox="0 0 24 24"
-        >
-          <path
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            strokeWidth={2}
-            d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-          />
-        </svg>
+      <div className="text-6xl mb-4">
+        {errorDisplay.icon}
       </div>
-      <h3 className="text-xl font-semibold mb-2">Oops! Something went wrong</h3>
-      <p className="text-gray-400 max-w-md">{message || 'An unexpected error occurred'}</p>
+      <h3 className="text-2xl font-semibold mb-2">{errorDisplay.title}</h3>
+      <p className="text-gray-400 max-w-md mb-4">{errorMessage}</p>
+      
+      {errorDisplay.suggestions && errorDisplay.suggestions.length > 0 && (
+        <div className="bg-gray-800 rounded-lg p-4 max-w-md mb-4">
+          <p className="text-sm font-semibold mb-2">Suggestions:</p>
+          <ul className="text-sm text-gray-400 text-left list-disc list-inside">
+            {errorDisplay.suggestions.map((suggestion, index) => (
+              <li key={index}>{suggestion}</li>
+            ))}
+          </ul>
+        </div>
+      )}
+      
+      {errorDisplay.canRetry && onRetry && (
+        <button
+          onClick={onRetry}
+          className="btn-primary px-6 py-3 mt-4"
+        >
+          Try Again
+        </button>
+      )}
     </div>
   );
 }
