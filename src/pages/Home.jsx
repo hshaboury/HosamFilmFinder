@@ -49,19 +49,19 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <h1 className="text-4xl font-bold text-center mb-8">Discover Movies</h1>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-6 sm:mb-8">Discover Movies</h1>
       
       <SearchBar onSearch={handleSearch} loading={loading} />
 
       {/* Search History */}
       {!hasSearched && searchHistory.length > 0 && (
-        <div className="max-w-3xl mx-auto mb-8 bg-gray-800 rounded-lg p-4">
+        <div className="max-w-3xl mx-auto mb-6 sm:mb-8 bg-gray-800 rounded-lg p-4">
           <div className="flex justify-between items-center mb-3">
             <h3 className="text-sm font-semibold text-gray-400">Recent Searches</h3>
             <button
               onClick={handleClearHistory}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors"
+              className="text-xs text-gray-500 hover:text-gray-300 transition-colors min-h-[44px] px-2 flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
             >
               Clear History
             </button>
@@ -71,7 +71,7 @@ export default function Home() {
               <button
                 key={index}
                 onClick={() => handleHistoryClick(query)}
-                className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-full text-sm transition-colors"
+                className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-full text-sm transition-colors min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 active:scale-95"
               >
                 {query}
               </button>
@@ -82,7 +82,7 @@ export default function Home() {
 
       {/* Loading State with Skeleton Loaders */}
       {loading && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
           {Array.from({ length: 8 }).map((_, index) => (
             <MovieCardSkeleton key={index} />
           ))}
@@ -117,8 +117,8 @@ export default function Home() {
               </svg>
           </div>
 
-          <h2 className="text-2xl font-semibold mb-2">Welcome to MovieSearch</h2>
-          <p className="text-gray-400 mb-4">
+          <h2 className="text-xl sm:text-2xl font-semibold mb-2">Welcome to MovieSearch</h2>
+          <p className="text-gray-400 mb-4 text-sm sm:text-base">
             Search for your favorite movies above to get started
           </p>
           <div className="max-w-md mx-auto bg-gray-800 rounded-lg p-4 mt-6">
@@ -138,7 +138,7 @@ export default function Home() {
         <>
           {totalResults > 0 && (
             <div className="text-center mb-6">
-              <p className="text-xl">
+              <p className="text-lg sm:text-xl">
                 Found <span className="text-blue-400 font-bold">{totalResults}</span> movies
                 {lastQuery && (
                   <span className="text-gray-400"> for "{lastQuery}"</span>
@@ -146,7 +146,7 @@ export default function Home() {
               </p>
               <button
                 onClick={handleClearSearch}
-                className="mt-2 text-sm text-gray-400 hover:text-white transition-colors"
+                className="mt-2 text-sm text-gray-400 hover:text-white transition-colors min-h-[44px] px-4 flex items-center mx-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded active:scale-95"
               >
                 Clear Search
               </button>

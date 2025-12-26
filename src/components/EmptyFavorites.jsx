@@ -4,10 +4,10 @@ export default function EmptyFavorites() {
   const navigate = useNavigate();
 
   return (
-    <div className="text-center py-20 animate-fadeIn">
+    <div className="text-center py-12 sm:py-20 animate-fadeIn">
       {/* Large empty heart icon */}
       <svg
-        className="w-24 h-24 mx-auto mb-6 text-gray-600"
+        className="w-20 h-20 sm:w-24 sm:h-24 mx-auto mb-6 text-gray-600"
         fill="none"
         stroke="currentColor"
         viewBox="0 0 24 24"
@@ -21,15 +21,15 @@ export default function EmptyFavorites() {
       </svg>
 
       {/* Message */}
-      <h2 className="text-3xl font-bold mb-3 text-gray-300">No favorites yet!</h2>
-      <p className="text-gray-400 text-lg mb-8 max-w-md mx-auto">
+      <h2 className="text-2xl sm:text-3xl font-bold mb-3 text-gray-300">No favorites yet!</h2>
+      <p className="text-gray-400 text-base sm:text-lg mb-8 max-w-md mx-auto px-4">
         Start exploring movies and add your favorites to see them here.
       </p>
 
       {/* CTA Button */}
       <button
         onClick={() => navigate('/')}
-        className="btn-primary text-lg flex items-center gap-2 mx-auto"
+        className="btn-primary text-base sm:text-lg flex items-center gap-2 mx-auto min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 active:scale-95 transition-transform"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path

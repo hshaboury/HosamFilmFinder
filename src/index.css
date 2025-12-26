@@ -10,10 +10,31 @@
 }
 
 @layer base {
+    * {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     background-color: var(--color-dark);
     color: rgb(243 244 246);
     min-height: 100vh;
+    line-height: 1.6;
+  }
+
+  /* Reduced motion support */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }    
   }
 }
 
@@ -22,40 +43,53 @@
     background-color: var(--color-primary);
     color: white;
     font-weight: 600;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
   }
   
   .btn-primary:hover {
     background-color: var(--color-primary-dark);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-primary:active {
+    transform: translateY(0);    
   }
   
   .btn-secondary {
     background-color: var(--color-dark-lighter);
     color: white;
     font-weight: 600;
-    padding: 0.5rem 1rem;
+    padding: 0.75rem 1.5rem;
     border-radius: 0.5rem;
-    transition: background-color 0.2s;
+    transition: all 0.2s ease;
   }
   
   .btn-secondary:hover {
     background-color: var(--color-dark-light);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+  }
+
+  .btn-secondary:active {
+    transform: translateY(0);    
   }
   
   .card {
     background-color: var(--color-dark-lighter);
     border-radius: 0.5rem;
-    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
+    box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.2);
     overflow: hidden;
-    transition: transform 0.2s;
+    transition: all 0.3s ease;
   }
   
   .card:hover {
-    transform: scale(1.05);
+    box-shadow: 0 20px 25px -5px rgb(0 0 0 / 0.3);
   }
   
+  /* Fade in animation */
   @keyframes fadeIn {
     from {
       opacity: 0;
@@ -71,6 +105,21 @@
     animation: fadeIn 0.5s ease-out;
   }
 
+  /* Slide in from right animation (for mobile menu) */
+  @keyframes slideInRight {
+    from {
+      transform: translateX(100%);
+    }
+    to {
+      transform: translateX(0);
+    }
+  }
+
+  .animate-slideInRight {
+    animation: slideInRight 0.3s ease-out;
+  }
+  
+  /* Slow spin animation (for loader) */
   @keyframes spin-slow {
   0% { transform: rotate(0deg);}
   100% { transform: rotate(360deg);}
@@ -79,7 +128,8 @@
   animation: spin-slow 2s linear infinite;
   }
 
-    @keyframes removing {
+  /* Remove animation */
+  @keyframes removing {
     from {
       opacity: 1;
       transform: scale(1);
@@ -93,4 +143,66 @@
   .removing {
     animation: removing 0.3s ease-out forwards;
   }
+
+  /* Pulse animation for favorites */
+  @keyframes pulse {
+    0%, 100% {
+      transform: scale(1);
+    }
+    50% {
+      transform: scale(1.05);
+    }
+  }
+
+  .animate-pulse-once {
+    animation: pulse 0.6s ease-in-out;
+  }
+
+  /* Line clamp utilities */
+  .line-clamp-1 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+  }
+
+  .line-clamp-2 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+  }
+
+  .line-clamp-3 {
+    overflow: hidden;
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 3;
+  }
+
+  /* Focus visible styles */
+  .focus-ring {
+    outline: 2px solid var(--color-primary);
+    outline-offset: 2px;
+  }
+
+
+
+  /* Smooth scrolling container */
+  .smooth-scroll {
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Reduced motion support for animations */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fadeIn,
+  .animate-slideInRight,
+  .animate-pulse,
+  .removing,
+  .card:hover {
+    animation: none !important;
+    transition: none !important;
+  }  
 }

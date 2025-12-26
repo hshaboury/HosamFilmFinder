@@ -119,11 +119,11 @@ export default function MovieDetails() {
   const formattedReleaseDate = formatReleaseDate(movie.Released);
 
   return (
-    <div className="container mx-auto px-4 py-8 animate-fadeIn">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fadeIn max-w-7xl">
       {/* Back Button */}
       <button
         onClick={handleBack}
-        className="btn-secondary mb-6 flex items-center gap-2 transition-all hover:gap-3"
+        className="btn-secondary mb-6 flex items-center gap-2 transition-all hover:gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 active:scale-95"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -131,13 +131,14 @@ export default function MovieDetails() {
         Back to Search
       </button>
 
-      <div className="grid md:grid-cols-3 gap-8">
-        {/* Poster Section */}
-        <div className="md:col-span-1">
+      <div className="flex flex-col md:grid md:grid-cols-5 lg:grid-cols-3 gap-6 md:gap-8">
+        {/* Poster Section - Stacked on mobile, side-by-side on tablet/desktop */}
+        <div className="md:col-span-2 lg:col-span-1">
           <img
             src={posterUrl}
             alt={`${movie.Title} poster`}
-            className="w-full rounded-lg shadow-lg"
+            loading="lazy"
+            className="w-full rounded-lg shadow-lg aspect-[2/3] object-cover"
             onError={(e) => {
               e.target.src = 'https://via.placeholder.com/300x450?text=No+Poster';
             }}
@@ -146,9 +147,9 @@ export default function MovieDetails() {
           {/* Favorite Button */}
           <button
             onClick={handleToggleFavorite}
-            className={`w-full mt-4 flex items-center justify-center gap-2 transition-all ${
+            className={`w-full mt-4 flex items-center justify-center gap-2 transition-all min-h-[44px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 active:scale-95 ${
               isFavorite(movie.imdbID) 
-                ? 'bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4 rounded-lg' 
+                ? 'bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4' 
                 : 'btn-primary'
             } ${heartAnimate ? 'animate-pulse' : ''}`}
           >
@@ -157,37 +158,39 @@ export default function MovieDetails() {
                 <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
                   <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
                 </svg>
-                Remove from Favorites
+                <span className="hidden sm:inline">Remove from Favorites</span>
+                <span className="sm:hidden">Remove</span>
               </>
             ) : (
               <>
                 <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
                 </svg>
-                Add to Favorites
+                <span className="hidden sm:inline">Add to Favorites</span>
+                <span className="sm:hidden">Add</span>
               </>
             )}
           </button>
         </div>
 
         {/* Movie Details Section */}
-        <div className="md:col-span-2 space-y-6">
+        <div className="md:col-span-3 lg:col-span-2 space-y-4 sm:space-y-6">
           {/* Header */}
           <div>
-            <h1 className="text-4xl md:text-5xl font-bold mb-3">
-              {movie.Title} {movie.Year !== 'N/A' && <span className="text-gray-400">({movie.Year})</span>}
+            <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-3 leading-tight">
+              {movie.Title} {movie.Year !== 'N/A' && <span className="text-gray-400 text-xl sm:text-2xl md:text-3xl">({movie.Year})</span>}
             </h1>
             
             {/* Meta Info */}
-            <div className="flex flex-wrap items-center gap-3 text-gray-400">
+            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-gray-400 text-sm sm:text-base">
               {movie.Rated && movie.Rated !== 'N/A' && (
-                <span className="px-2 py-1 border border-gray-500 rounded text-sm font-semibold">
+                <span className="px-2 py-1 border border-gray-500 rounded text-xs sm:text-sm font-semibold">
                   {movie.Rated}
                 </span>
               )}
               {formattedRuntime && (
                 <>
-                  <span>•</span>
+                  <span className="hidden sm:inline">•</span>
                   <span>{formattedRuntime}</span>
                 </>
               )}
@@ -209,12 +212,12 @@ export default function MovieDetails() {
 
           {/* Plot */}
           <div>
-            <h2 className="text-xl font-semibold mb-3 text-gray-300">Plot</h2>
-            <p className="text-gray-200 leading-relaxed">{displayPlot}</p>
+            <h2 className="text-lg sm:text-xl font-semibold mb-3 text-gray-300">Plot</h2>
+            <p className="text-gray-200 leading-relaxed text-sm sm:text-base">{displayPlot}</p>
             {shouldTruncatePlot && (
               <button
                 onClick={() => setExpandPlot(!expandPlot)}
-                className="mt-2 text-blue-400 hover:text-blue-300 text-sm font-medium"
+                className="mt-2 text-blue-400 hover:text-blue-300 text-sm font-medium min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded px-2 active:scale-95"
               >
                 {expandPlot ? 'Read less' : 'Read more'}
               </button>
@@ -226,7 +229,7 @@ export default function MovieDetails() {
 
           {/* Cast & Crew */}
           <div>
-            <h2 className="text-xl font-semibold mb-4 text-gray-300">Cast & Crew</h2>
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 text-gray-300">Cast & Crew</h2>
             <MovieInfo 
               director={movie.Director}
               writer={movie.Writer}
@@ -239,8 +242,8 @@ export default function MovieDetails() {
 
           {/* Additional Information */}
           <div>
-            <h2 className="text-xl font-semibold mb-4 text-gray-300">Additional Information</h2>
-            <div className="grid sm:grid-cols-2 gap-4">
+            <h2 className="text-lg sm:text-xl font-semibold mb-4 text-gray-300">Additional Information</h2>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm sm:text-base">
               {formattedReleaseDate && (
                 <div>
                   <h3 className="text-sm font-semibold text-gray-400 mb-1">Released</h3>
@@ -283,7 +286,7 @@ export default function MovieDetails() {
                 <h3 className="text-sm font-semibold text-gray-400 mb-2 flex items-center gap-2">
                   🏆 Awards
                 </h3>
-                <p className="text-gray-200">{movie.Awards}</p>
+                <p className="text-gray-200 text-sm sm:text-base">{movie.Awards}</p>
               </div>
             )}
           </div>
