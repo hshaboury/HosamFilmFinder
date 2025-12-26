@@ -1,8 +1,10 @@
 import { NavLink } from 'react-router-dom';
 import { useState } from 'react';
+import { useFavorites } from '../context/FavoritesContext';
 
 export default function Navbar() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { favoritesCount } = useFavorites();
 
   return (
     <nav className="bg-gray-800 shadow-lg mb-8">
@@ -28,12 +30,17 @@ export default function Navbar() {
             <NavLink
               to="/favorites"
               className={({ isActive }) =>
-                `text-lg font-medium transition-colors ${
+                `text-lg font-medium transition-colors flex items-center gap-2 ${
                   isActive ? 'text-blue-500' : 'text-gray-300 hover:text-white'
                 }`
               }
             >
               Favorites
+              {favoritesCount > 0 && (
+                <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
+                  {favoritesCount}
+                </span>
+              )}
             </NavLink>
           </div>
 
@@ -85,12 +92,17 @@ export default function Navbar() {
               to="/favorites"
               onClick={() => setIsMenuOpen(false)}
               className={({ isActive }) =>
-                `block py-2 text-lg font-medium transition-colors ${
+                `block py-2 text-lg font-medium transition-colors flex items-center gap-2 ${
                   isActive ? 'text-blue-500' : 'text-gray-300 hover:text-white'
                 }`
               }
             >
               Favorites
+              {favoritesCount > 0 && (
+                <span className="bg-red-600 text-white text-xs font-bold px-2 py-1 rounded-full min-w-[24px] text-center">
+                  {favoritesCount}
+                </span>
+              )}
             </NavLink>
           </div>
         )}

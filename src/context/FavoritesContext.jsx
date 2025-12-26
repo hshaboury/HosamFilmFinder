@@ -26,7 +26,7 @@ export function FavoritesProvider({ children }) {
       if (prev.some((fav) => fav.imdbID === movie.imdbID)) {
         return prev;
       }
-      return [...prev, movie];
+      return [...prev, { ...movie, addedAt: Date.now() }];
     });
   };
 
@@ -34,13 +34,61 @@ export function FavoritesProvider({ children }) {
     setFavorites((prev) => prev.filter((movie) => movie.imdbID !== imdbId));
   };
 
+  const clearAllFavorites = () => {
+    setFavorites([]);
+  };
+
   const isFavorite = (imdbId) => {
     return favorites.some((movie) => movie.imdbID === imdbId);
   };
 
+  const getFavoritesSorted = (sortBy, order = 'desc') => {
+    const sorted = [...favorites];
+    
+    switch (sortBy) {
+      case 'dateAdded':
+        sorted.sort((a, b) => {
+          const timeA = a.addedAt || 0;
+          const timeB = b.addedAt || 0;
+          return order === 'desc' ? timeB - timeA : timeA - timeB;
+        });
+        break;
+      case 'title':
+        sorted.sort((a, b) => {
+          const titleA = a.Title.toLowerCase();
+          const titleB = b.Title.toLowerCase();
+          return order === 'asc' 
+            ? titleA.localeCompare(titleB) 
+            : titleB.localeCompare(titleA);
+        });
+        break;
+      case 'year':
+        sorted.sort((a, b) => {
+          const yearA = parseInt(a.Year) || 0;
+          const yearB = parseInt(b.Year) || 0;
+          return order === 'desc' ? yearB - yearA : yearA - yearB;
+        });
+        break;
+      default:
+        break;
+    }
+    
+    return sorted;
+  };
+
+  const favoritesCount = favorites.length;
+
   return (
     <FavoritesContext.Provider
-      value={{ favorites, addFavorite, removeFavorite, isFavorite }}
+      value={{ 
+        favorites, 
+        addFavorite, 
+        removeFavorite, 
+        clearAllFavorites,
+        isFavorite,
+        getFavoritesSorted,
+        favoritesCount
+      }}
     >
       {children}
     </FavoritesContext.Provider>
