@@ -43,7 +43,7 @@ src/
 └── index.css             # Tailwind CSS imports and global styles
 ```
 
-## 🚀 Setup Instructions
+## 🤖 Setup Instructions
 
 ### Prerequisites
 
@@ -88,29 +88,9 @@ src/
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
 
-## 🚀 Deployment
-
-### Deploy to Vercel (Recommended)
-
-1. **Push your code to GitHub** (if not already done)
-
-2. **Connect to Vercel**
-   - Go to [vercel.com](https://vercel.com)
-   - Sign in with GitHub
-   - Click "New Project"
-   - Import your `movie-search-app` repository
-
-3. **Configure Environment Variables**
-   - In Vercel dashboard, go to Settings → Environment Variables
-   - Add: `VITE_OMDB_API_KEY` = `your_api_key_here`
-
-4. **Deploy**
-   - Vercel will automatically build and deploy
-   - You'll get a live URL like: `https://movie-search-app-username.vercel.app`
-
 ## 🔗 Live Demo
 
-[View Live Demo](https://your-deployment-url.vercel.app)
+[View Live Demo](https://hosam-film-finder.vercel.app)
 
 ## 🎯 Usage
 

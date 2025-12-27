@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { getMovieDetails } from '../services/api';
 import { useFavorites } from '../context/FavoritesContext';
 import MovieDetailsSkeleton from '../components/MovieDetailsSkeleton';
@@ -12,6 +12,7 @@ export default function MovieDetails() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { addFavorite, removeFavorite, isFavorite } = useFavorites();
+  const [searchParams] = useSearchParams();
   
   const [movie, setMovie] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -67,8 +68,11 @@ export default function MovieDetails() {
   };
 
   const handleBack = () => {
+    const q = searchParams.get('q');
     if (window.history.length > 1) {
       navigate(-1);
+    } else if (q) {
+      navigate({ pathname: '/', search: `?q=${encodeURIComponent(q)}` });
     } else {
       navigate('/');
     }
@@ -119,11 +123,11 @@ export default function MovieDetails() {
   const formattedReleaseDate = formatReleaseDate(movie.Released);
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fadeIn max-w-7xl">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 animate-fadeIn max-w-7xl min-h-screen">
       {/* Back Button */}
       <button
         onClick={handleBack}
-        className="btn-secondary mb-6 flex items-center gap-2 transition-all hover:gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 active:scale-95"
+        className="btn-primary mb-6 flex items-center gap-2 transition-all hover:gap-3 min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 active:scale-95"
       >
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
@@ -131,7 +135,7 @@ export default function MovieDetails() {
         Back to Search
       </button>
 
-      <div className="flex flex-col md:grid md:grid-cols-5 lg:grid-cols-3 gap-6 md:gap-8">
+      <div className="flex flex-col md:grid md:grid-cols-5 lg:grid-cols-3 gap-6 md:gap-8 px-2 sm:px-0">
         {/* Poster Section - Stacked on mobile, side-by-side on tablet/desktop */}
         <div className="md:col-span-2 lg:col-span-1">
           <img

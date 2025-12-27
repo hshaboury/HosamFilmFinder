@@ -14,7 +14,7 @@ export default function MovieCard({ movie }) {
 
   return (
     <Link to={`/movie/${movie.imdbID}`} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg">
-      <div className="card h-full relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-[1.02]">
+      <div className="card h-full relative overflow-hidden bg-gradient-to-br from-[#1a0b2e]/80 to-[#020617]/90 border border-purple-500/20 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-[1.02]">
         {/* Favorite Heart Icon Overlay */}
         {isInFavorites && (
           <div className="absolute top-2 right-2 z-10 bg-red-500 rounded-full p-2 shadow-lg min-w-[32px] min-h-[32px] flex items-center justify-center">

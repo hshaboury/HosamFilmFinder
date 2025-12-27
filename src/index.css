@@ -19,10 +19,16 @@
   }
 
   body {
-    background-color: var(--color-dark);
-    color: rgb(243 244 246);
     min-height: 100vh;
     line-height: 1.6;
+    color: rgb(243 244 246);
+    background:
+      radial-gradient(ellipse 80% 60% at 60% 10%, rgba(99,102,241,0.18) 0%, rgba(37, 36, 64, 0.0) 100%),
+      radial-gradient(ellipse 60% 40% at 20% 80%, rgba(59,130,246,0.15) 0%, rgba(37, 36, 64, 0.0) 100%),
+      linear-gradient(120deg, #0a0a23 0%, #181826 100%);
+    background-attachment: fixed;
+    background-repeat: no-repeat;
+    background-size: cover;
   }
 
   /* Reduced motion support */

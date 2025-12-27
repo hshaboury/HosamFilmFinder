@@ -81,23 +81,23 @@ export default function Favorites() {
   // Empty state
   if (favorites.length === 0) {
     return (
-      <div className="container mx-auto px-4 py-8">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8 min-h-screen">
         <EmptyFavorites />
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 min-h-screen">
       {/* Header Section */}
-      <div className="mb-6 sm:mb-8">
-        <h1 className="text-3xl sm:text-4xl font-bold mb-2 flex flex-wrap items-center gap-3">
+      <div className="mb-6 sm:mb-8 px-2 sm:px-0">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 flex flex-wrap items-center gap-3">
           My Favorites
           <span className="bg-blue-600 text-white text-lg sm:text-xl font-semibold px-3 py-1 rounded-full">
             {favorites.length}
           </span>
         </h1>
-        <p className="text-gray-400 text-sm sm:text-base">
+        <p className="text-gray-400 text-xs sm:text-sm md:text-base">
           {favorites.length === 1 ? '1 movie' : `${favorites.length} movies`} in your collection
         </p>
       </div>
@@ -106,7 +106,7 @@ export default function Favorites() {
       <hr className="border-gray-700 mb-4 sm:mb-6" />
 
       {/* Sort Controls and Clear All Button */}
-      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
+      <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6 px-2 sm:px-0">
         <SortControls sortBy={sortBy} order={order} onSortChange={handleSortChange} />
         
         <button
@@ -122,7 +122,7 @@ export default function Favorites() {
       <hr className="border-gray-700 mb-6 sm:mb-8" />
 
       {/* Movie Grid - Responsive: 2 cols (mobile), 3 cols (tablet), 4-5 cols (desktop) */}
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5 animate-fadeIn">
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5 animate-fadeIn">
         {sortedFavorites.map((movie) => (
           <div
             key={movie.imdbID}
@@ -131,7 +131,7 @@ export default function Favorites() {
             }`}
           >
             <Link to={`/movie/${movie.imdbID}`} className="block group focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded-lg">
-              <div className="card h-full relative overflow-hidden transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-[1.02]">
+              <div className="card h-full relative overflow-hidden bg-gradient-to-br from-[#1a0b2e]/80 to-[#020617]/90 border border-purple-500/20 backdrop-blur transition-all duration-300 hover:scale-105 hover:shadow-2xl active:scale-[1.02]">
                 {/* Movie Poster */}
                 <img
                   src={movie.Poster !== 'N/A' ? movie.Poster : 'https://via.placeholder.com/300x450/1a1a1a/ffffff?text=No+Poster'}

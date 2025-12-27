@@ -67,7 +67,7 @@ export default function SearchBar({ onSearch, placeholder = 'Search for movies..
             }}
             onKeyDown={handleKeyDown}
             placeholder={placeholder}
-            className="w-full pl-12 pr-12 py-3 sm:py-3 text-base sm:text-base bg-gray-800 text-white rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50 min-h-[44px]"
+            className="w-full pl-12 pr-12 py-3 sm:py-3 text-base sm:text-base bg-gray-900/70 backdrop-blur-md text-white rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus-visible:ring-2 focus-visible:ring-blue-500 disabled:opacity-50 min-h-[44px] border border-gray-800 shadow-lg"
             aria-label="Search for movies"
             disabled={loading}
           />

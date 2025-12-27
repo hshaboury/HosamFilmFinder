@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import MovieList from '../components/MovieList';
 import MovieCardSkeleton from '../components/MovieCardSkeleton';
@@ -8,20 +9,21 @@ import { useMovieSearch } from '../hooks/useMovieSearch';
 
 const MAX_HISTORY_ITEMS = 5;
 
+
 export default function Home() {
   const { movies, loading, error, totalResults, search, clearResults } = useMovieSearch();
   const [hasSearched, setHasSearched] = useState(false);
   const [searchHistory, setSearchHistory] = useLocalStorage('searchHistory', []);
   const [lastQuery, setLastQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
 
   const handleSearch = async (query) => {
     if (!query || query === lastQuery) return;
-    
     setLastQuery(query);
     setHasSearched(true);
+    setSearchParams({ q: query });
     await search(query);
-    
-    // Add to search history
     setSearchHistory((prev) => {
       const filtered = prev.filter((item) => item.toLowerCase() !== query.toLowerCase());
       return [query, ...filtered].slice(0, MAX_HISTORY_ITEMS);
@@ -29,6 +31,7 @@ export default function Home() {
   };
 
   const handleHistoryClick = (query) => {
+    setSearchParams({ q: query });
     handleSearch(query);
   };
 
@@ -46,22 +49,33 @@ export default function Home() {
     clearResults();
     setHasSearched(false);
     setLastQuery('');
+    setSearchParams({});
   };
+  // On mount, check for query param and auto-search
+  useEffect(() => {
+    const q = searchParams.get('q');
+    if (q) {
+      setLastQuery(q);
+      setHasSearched(true);
+      search(q);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-      <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-center mb-6 sm:mb-8">Discover Movies</h1>
+    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 min-h-screen">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-6 sm:mb-8">Discover Movies</h1>
       
       <SearchBar onSearch={handleSearch} loading={loading} />
 
       {/* Search History */}
       {!hasSearched && searchHistory.length > 0 && (
-        <div className="max-w-3xl mx-auto mb-6 sm:mb-8 bg-gray-800 rounded-lg p-4">
+        <div className="max-w-3xl mx-auto mb-6 sm:mb-8 bg-gray-900/70 backdrop-blur-md border border-gray-800 rounded-xl p-4 sm:p-6 shadow-lg">
           <div className="flex justify-between items-center mb-3">
-            <h3 className="text-sm font-semibold text-gray-400">Recent Searches</h3>
+            <h3 className="text-sm font-semibold text-gray-300">Recent Searches</h3>
             <button
               onClick={handleClearHistory}
-              className="text-xs text-gray-500 hover:text-gray-300 transition-colors min-h-[44px] px-2 flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded"
+              className="text-sm font-medium text-gray-200 bg-gray-900/60 border border-gray-700/40 hover:bg-gray-800/80 hover:shadow-[0_0_0_1px_rgba(59,130,246,0.4)] px-4 py-2 rounded-md transition-all focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 flex items-center gap-1"
             >
               Clear History
             </button>
@@ -71,7 +85,7 @@ export default function Home() {
               <button
                 key={index}
                 onClick={() => handleHistoryClick(query)}
-                className="px-3 py-1.5 bg-gray-700 hover:bg-gray-600 rounded-full text-sm transition-colors min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 active:scale-95"
+                className="px-3 py-1.5 bg-gray-800/80 hover:bg-gray-700/80 rounded-full text-sm transition-colors min-h-[44px] flex items-center focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 active:scale-95 border border-gray-700/40"
               >
                 {query}
               </button>
@@ -82,7 +96,7 @@ export default function Home() {
 
       {/* Loading State with Skeleton Loaders */}
       {loading && (
-         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
+         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
           {Array.from({ length: 8 }).map((_, index) => (
             <MovieCardSkeleton key={index} />
           ))}
@@ -100,7 +114,7 @@ export default function Home() {
 
       {/* Welcome State */}
       {!loading && !error && !hasSearched && (
-        <div className="text-center py-12">
+        <div className="text-center py-12 px-2 sm:px-0">
 
           <div className="mb-4 flex justify-center">
               <svg className="w-20 h-20 animate-bounce" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -117,13 +131,13 @@ export default function Home() {
               </svg>
           </div>
 
-          <h2 className="text-xl sm:text-2xl font-semibold mb-2">Welcome to MovieSearch</h2>
-          <p className="text-gray-400 mb-4 text-sm sm:text-base">
+          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold mb-2">Welcome to MovieSearch</h2>
+          <p className="text-gray-400 mb-4 text-xs sm:text-sm md:text-base">
             Search for your favorite movies above to get started
           </p>
-          <div className="max-w-md mx-auto bg-gray-800 rounded-lg p-4 mt-6">
-            <p className="text-sm text-gray-400 mb-2">💡 Tips:</p>
-            <ul className="text-sm text-gray-400 text-left space-y-1">
+          <div className="max-w-md mx-auto bg-gray-900/70 backdrop-blur-md border border-gray-800 rounded-xl p-4 sm:p-6 mt-6 shadow-lg">
+            <p className="text-xs sm:text-sm text-blue-300 mb-2">💡 Tips:</p>
+            <ul className="text-xs sm:text-sm text-gray-300 text-left space-y-1">
               <li>• Enter at least 3 characters to search</li>
               <li>• Try searching for "Batman", "Avengers", or "Star Wars"</li>
               <li>• Click on any movie to see full details</li>
@@ -137,7 +151,7 @@ export default function Home() {
       {!loading && !error && hasSearched && (
         <>
           {totalResults > 0 && (
-            <div className="text-center mb-6">
+            <div className="text-center mb-6 px-2 sm:px-0">
               <p className="text-lg sm:text-xl">
                 Found <span className="text-blue-400 font-bold">{totalResults}</span> movies
                 {lastQuery && (
@@ -146,7 +160,7 @@ export default function Home() {
               </p>
               <button
                 onClick={handleClearSearch}
-                className="mt-2 text-sm text-gray-400 hover:text-white transition-colors min-h-[44px] px-4 flex items-center mx-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 rounded active:scale-95"
+                className="mt-2 text-m font-medium text-blue-300 bg-blue-500/10 hover:bg-blue-500/20 px-4 py-2 rounded-md transition-all mx-auto focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 active:scale-95"
               >
                 Clear Search
               </button>
