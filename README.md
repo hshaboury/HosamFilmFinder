@@ -4,12 +4,12 @@ A modern, responsive movie search application built with React, Vite, and Tailwi
 
 ## ✨ Features
 
-- 🔍 **Search Movies** - Search for movies using the OMDb API
-- 📖 **Detailed Information** - View comprehensive movie details including plot, cast, ratings, and more
-- ❤️ **Favorites** - Save your favorite movies with persistent local storage
-- 📱 **Responsive Design** - Fully responsive UI that works on all devices
-- 🎨 **Modern UI** - Clean, dark-themed interface with smooth animations
-- ⚡ **Fast Performance** - Built with Vite for lightning-fast development and optimized builds
+- **Search Movies** - Search for movies using the OMDb API
+- **Detailed Information** - View comprehensive movie details including plot, cast, ratings, and more
+- **Favorites** - Save your favorite movies with persistent local storage
+- **Responsive Design** - Fully responsive UI that works on all devices
+- **Modern UI** - Clean, dark-themed interface with smooth animations
+- **Fast Performance** - Built with Vite for lightning-fast development and optimized builds
 
 ## 🛠️ Tech Stack
 
@@ -87,6 +87,30 @@ src/
 - `npm run build` - Build for production
 - `npm run preview` - Preview production build
 - `npm run lint` - Run ESLint
+
+## 🚀 Deployment
+
+### Deploy to Vercel (Recommended)
+
+1. **Push your code to GitHub** (if not already done)
+
+2. **Connect to Vercel**
+   - Go to [vercel.com](https://vercel.com)
+   - Sign in with GitHub
+   - Click "New Project"
+   - Import your `movie-search-app` repository
+
+3. **Configure Environment Variables**
+   - In Vercel dashboard, go to Settings → Environment Variables
+   - Add: `VITE_OMDB_API_KEY` = `your_api_key_here`
+
+4. **Deploy**
+   - Vercel will automatically build and deploy
+   - You'll get a live URL like: `https://movie-search-app-username.vercel.app`
+
+## 🔗 Live Demo
+
+[View Live Demo](https://your-deployment-url.vercel.app)
 
 ## 🎯 Usage
 

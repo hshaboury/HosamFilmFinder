@@ -12,7 +12,7 @@ async function fetchWithTimeout(url, options = {}, timeout = TIMEOUT_MS) {
   const id = setTimeout(() => controller.abort(), timeout);
 
   try {
-      const response = await fetch(url, {
+    const response = await fetch(url, {
       ...options,
       signal: controller.signal
     });
@@ -99,7 +99,7 @@ export async function searchMovies(query, page = 1) {
     const url = `${BASE_URL}?apikey=${API_KEY}&s=${encodeURIComponent(query)}&type=movie&page=${page}`;
     const response = await fetchWithRetry(url);
     const data = await response.json();
-
+    
     if (data.Response === 'False') {
       const error = categorizeError(data.Error);
       return {
@@ -110,7 +110,7 @@ export async function searchMovies(query, page = 1) {
         currentPage: page
       };
     }
-
+    
     return {
       success: true,
       movies: data.Search || [],
@@ -118,7 +118,9 @@ export async function searchMovies(query, page = 1) {
       currentPage: page
     };
   } catch (error) {
-    console.error('Error searching movies:', error);
+    if (import.meta.env.DEV) {
+      console.error('Error searching movies:', error);
+    }
     const categorizedError = categorizeError(error.message);
     return {
       success: false,
@@ -131,18 +133,20 @@ export async function searchMovies(query, page = 1) {
 }
 
 export async function getMovieDetails(imdbId) {
-  try {  
+  try {
     const url = `${BASE_URL}?apikey=${API_KEY}&i=${imdbId}&plot=full`;
     const response = await fetchWithRetry(url);
     const data = await response.json();
-
+    
     if (data.Response === 'False') {
       throw new Error(data.Error || 'Movie not found');
     }
-
+    
     return data;
   } catch (error) {
-    console.error('Error getting movie details:', error);
+    if (import.meta.env.DEV) {
+      console.error('Error getting movie details:', error);
+    }
     throw error;
   }
 }
