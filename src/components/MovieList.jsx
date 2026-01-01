@@ -1,6 +1,6 @@
 import MovieCard from './MovieCard';
 
-export default function MovieList({ movies, totalResults }) {
+export default function MovieList({ movies, totalResults, currentPage = 1 }) {
   if (!movies || movies.length === 0) {
     return (
       <div className="text-center py-12">
@@ -9,13 +9,17 @@ export default function MovieList({ movies, totalResults }) {
     );
   }
 
+  const resultsPerPage = 10; // OMDb API returns 10 results per page
+  const startResult = (currentPage - 1) * resultsPerPage + 1;
+  const endResult = Math.min(currentPage * resultsPerPage, totalResults);
+
   return (
     <div className="animate-fadeIn">
       {/* Results Count Header */}
       {totalResults > 0 && (
         <div className="mb-6">
           <p className="text-gray-400 text-center text-sm sm:text-base">
-            Showing <span className="text-white font-semibold">{movies.length}</span> of{' '}
+            Showing <span className="text-white font-semibold">{startResult}-{endResult}</span> of{' '}
             <span className="text-white font-semibold">{totalResults}</span> results
           </p>
         </div>

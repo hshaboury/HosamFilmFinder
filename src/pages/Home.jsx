@@ -4,6 +4,7 @@ import SearchBar from '../components/SearchBar';
 import MovieList from '../components/MovieList';
 import MovieCardSkeleton from '../components/MovieCardSkeleton';
 import Error from '../components/Error';
+import Pagination from '../components/Pagination';
 import { useLocalStorage } from '../hooks/userLocalStorage';
 import { useMovieSearch } from '../hooks/useMovieSearch';
 
@@ -11,7 +12,7 @@ const MAX_HISTORY_ITEMS = 5;
 
 
 export default function Home() {
-  const { movies, loading, error, totalResults, search, clearResults } = useMovieSearch();
+  const { movies, loading, error, totalResults, currentPage, search, clearResults } = useMovieSearch();
   const [hasSearched, setHasSearched] = useState(false);
   const [searchHistory, setSearchHistory] = useLocalStorage('searchHistory', []);
   const [lastQuery, setLastQuery] = useState('');
@@ -22,12 +23,18 @@ export default function Home() {
     if (!query || query === lastQuery) return;
     setLastQuery(query);
     setHasSearched(true);
-    setSearchParams({ q: query });
-    await search(query);
+    setSearchParams({ q: query, page: '1' });
+    await search(query, 1);
     setSearchHistory((prev) => {
       const filtered = prev.filter((item) => item.toLowerCase() !== query.toLowerCase());
       return [query, ...filtered].slice(0, MAX_HISTORY_ITEMS);
     });
+  };
+
+  const handlePageChange = async (page) => {
+    if (!lastQuery) return;
+    setSearchParams({ q: lastQuery, page: page.toString() });
+    await search(lastQuery, page);
   };
 
   const handleHistoryClick = (query) => {
@@ -54,10 +61,11 @@ export default function Home() {
   // On mount, check for query param and auto-search
   useEffect(() => {
     const q = searchParams.get('q');
+    const page = searchParams.get('page');
     if (q) {
       setLastQuery(q);
       setHasSearched(true);
-      search(q);
+      search(q, page ? parseInt(page) : 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -166,7 +174,16 @@ export default function Home() {
               </button>
             </div>
           )}
-          <MovieList movies={movies} totalResults={totalResults} />
+          <MovieList movies={movies} totalResults={totalResults} currentPage={currentPage} />
+          
+          {/* Pagination */}
+          {totalResults > 10 && (
+            <Pagination
+              currentPage={currentPage}
+              totalResults={totalResults}
+              onPageChange={handlePageChange}
+            />
+          )}
         </>
       )}
     </div>

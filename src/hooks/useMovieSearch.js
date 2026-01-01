@@ -10,6 +10,7 @@ export function useMovieSearch() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [totalResults, setTotalResults] = useState(0);
+  const [currentPage, setCurrentPage] = useState(1);
 
   const search = async (query, page = 1) => {
     setLoading(true);
@@ -21,10 +22,12 @@ export function useMovieSearch() {
       if (result.success) {
         setMovies(result.movies);
         setTotalResults(result.totalResults);
+        setCurrentPage(page);
       } else {
         setError(result.error);
         setMovies([]);
         setTotalResults(0);
+        setCurrentPage(1);
       }
     } catch (err) {
       setError({
@@ -33,6 +36,7 @@ export function useMovieSearch() {
       });
       setMovies([]);
       setTotalResults(0);
+      setCurrentPage(1);
     } finally {
       setLoading(false);
     }
@@ -42,6 +46,7 @@ export function useMovieSearch() {
     setMovies([]);
     setError(null);
     setTotalResults(0);
+    setCurrentPage(1);
   };
 
   return {
@@ -49,6 +54,7 @@ export function useMovieSearch() {
     loading,
     error,
     totalResults,
+    currentPage,
     search,
     clearResults
   };
