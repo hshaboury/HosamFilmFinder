@@ -148,33 +148,52 @@ export default function MovieDetails() {
             }}
           />
           
-          {/* Favorite Button */}
-          <button
-            onClick={handleToggleFavorite}
-            className={`w-full mt-4 flex items-center justify-center gap-2 transition-all min-h-[44px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 active:scale-95 ${
-              isFavorite(movie.imdbID) 
-                ? 'bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4' 
-                : 'btn-primary'
-            } ${heartAnimate ? 'animate-pulse' : ''}`}
-          >
-            {isFavorite(movie.imdbID) ? (
-              <>
-                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                  <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
-                </svg>
-                <span className="hidden sm:inline">Remove from Favorites</span>
-                <span className="sm:hidden">Remove</span>
-              </>
-            ) : (
-              <>
-                <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
-                </svg>
-                <span className="hidden sm:inline">Add to Favorites</span>
-                <span className="sm:hidden">Add</span>
-              </>
-            )}
-          </button>
+          {/* Action Buttons */}
+          <div className="space-y-3 mt-4">
+            <button
+              onClick={handleToggleFavorite}
+              className={`w-full flex items-center justify-center gap-2 transition-all min-h-[44px] rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue-500 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 active:scale-95 ${
+                isFavorite(movie.imdbID) 
+                  ? 'bg-red-600 hover:bg-red-700 text-white font-semibold py-3 px-4' 
+                  : 'btn-primary'
+              } ${heartAnimate ? 'animate-pulse' : ''}`}
+            >
+              {isFavorite(movie.imdbID) ? (
+                <>
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" />
+                  </svg>
+                  <span className="hidden sm:inline">Remove from Favorites</span>
+                  <span className="sm:hidden">Remove</span>
+                </>
+              ) : (
+                <>
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z" />
+                  </svg>
+                  <span className="hidden sm:inline">Add to Favorites</span>
+                  <span className="sm:hidden">Add</span>
+                </>
+              )}
+            </button>
+
+            {/* View on IMDb Button */}
+            <a
+              href={`https://www.imdb.com/title/${movie.imdbID}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full flex items-center justify-center gap-2 bg-amber-500 hover:bg-amber-600 text-black font-semibold py-3 px-4 rounded-lg transition-all min-h-[44px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-400 focus-visible:ring-offset-2 focus-visible:ring-offset-gray-900 active:scale-95 shadow-lg hover:shadow-amber-500/50"
+            >
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" />
+              </svg>
+              <span className="hidden sm:inline">View on IMDb</span>
+              <span className="sm:hidden">IMDb</span>
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+              </svg>
+            </a>
+          </div>
         </div>
 
         {/* Movie Details Section */}
