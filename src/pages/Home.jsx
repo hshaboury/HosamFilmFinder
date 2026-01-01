@@ -1,10 +1,12 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import MovieList from '../components/MovieList';
 import MovieCardSkeleton from '../components/MovieCardSkeleton';
 import Error from '../components/Error';
 import Pagination from '../components/Pagination';
+import FilterControls from '../components/FilterControls';
+import SortControls from '../components/SortControls';
 import { useLocalStorage } from '../hooks/userLocalStorage';
 import { useMovieSearch } from '../hooks/useMovieSearch';
 
@@ -18,11 +20,53 @@ export default function Home() {
   const [lastQuery, setLastQuery] = useState('');
   const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
+  
+  // Sorting and Filtering state
+  const [sortBy, setSortBy] = useState('relevance');
+  const [sortOrder, setSortOrder] = useState('desc');
+  const [yearRange, setYearRange] = useState({ min: null, max: null });
+
+  // Filter and sort movies
+  const processedMovies = useMemo(() => {
+    let filtered = [...movies];
+
+    // Apply year range filter
+    if (yearRange.min || yearRange.max) {
+      filtered = filtered.filter((movie) => {
+        const year = parseInt(movie.Year);
+        if (isNaN(year)) return false;
+        if (yearRange.min && year < yearRange.min) return false;
+        if (yearRange.max && year > yearRange.max) return false;
+        return true;
+      });
+    }
+
+    // Apply sorting
+    if (sortBy === 'title') {
+      filtered.sort((a, b) => {
+        const comparison = a.Title.localeCompare(b.Title);
+        return sortOrder === 'asc' ? comparison : -comparison;
+      });
+    } else if (sortBy === 'year') {
+      filtered.sort((a, b) => {
+        const yearA = parseInt(a.Year) || 0;
+        const yearB = parseInt(b.Year) || 0;
+        return sortOrder === 'desc' ? yearB - yearA : yearA - yearB;
+      });
+    }
+    // For 'relevance', keep the original order from API
+
+    return filtered;
+  }, [movies, sortBy, sortOrder, yearRange]);
 
   const handleSearch = async (query) => {
     if (!query || query === lastQuery) return;
     setLastQuery(query);
     setHasSearched(true);
+    // Reset filters and sorting on new search
+    setSortBy('relevance');
+    setSortOrder('desc');
+    setYearRange({ min: null, max: null });
     setSearchParams({ q: query, page: '1' });
     await search(query, 1);
     setSearchHistory((prev) => {
@@ -31,9 +75,42 @@ export default function Home() {
     });
   };
 
+  const handleSortChange = (newSortBy, newOrder) => {
+    setSortBy(newSortBy);
+    setSortOrder(newOrder);
+    updateURLParams({ sortBy: newSortBy, sortOrder: newOrder });
+  };
+
+  const handleFilterChange = (newYearRange) => {
+    setYearRange(newYearRange);
+    updateURLParams({ 
+      yearMin: newYearRange.min?.toString() || null,
+      yearMax: newYearRange.max?.toString() || null
+    });
+  };
+
+  const updateURLParams = (updates) => {
+    const params = {
+      q: lastQuery,
+      page: currentPage.toString(),
+      sortBy,
+      sortOrder,
+      ...(yearRange.min && { yearMin: yearRange.min.toString() }),
+      ...(yearRange.max && { yearMax: yearRange.max.toString() }),
+      ...updates
+    };
+    // Remove null/undefined values
+    Object.keys(params).forEach(key => {
+      if (params[key] === null || params[key] === undefined) {
+        delete params[key];
+      }
+    });
+    setSearchParams(params);
+  };
+
   const handlePageChange = async (page) => {
     if (!lastQuery) return;
-    setSearchParams({ q: lastQuery, page: page.toString() });
+    updateURLParams({ page: page.toString() });
     await search(lastQuery, page);
   };
 
@@ -56,15 +133,34 @@ export default function Home() {
     clearResults();
     setHasSearched(false);
     setLastQuery('');
+    setSortBy('relevance');
+    setSortOrder('desc');
+    setYearRange({ min: null, max: null });
     setSearchParams({});
   };
   // On mount, check for query param and auto-search
   useEffect(() => {
     const q = searchParams.get('q');
     const page = searchParams.get('page');
+    const urlSortBy = searchParams.get('sortBy');
+    const urlSortOrder = searchParams.get('sortOrder');
+    const urlYearMin = searchParams.get('yearMin');
+    const urlYearMax = searchParams.get('yearMax');
+    
     if (q) {
       setLastQuery(q);
       setHasSearched(true);
+      
+      // Restore filters and sorting from URL
+      if (urlSortBy) setSortBy(urlSortBy);
+      if (urlSortOrder) setSortOrder(urlSortOrder);
+      if (urlYearMin || urlYearMax) {
+        setYearRange({
+          min: urlYearMin ? parseInt(urlYearMin) : null,
+          max: urlYearMax ? parseInt(urlYearMax) : null
+        });
+      }
+      
       search(q, page ? parseInt(page) : 1);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -174,7 +270,42 @@ export default function Home() {
               </button>
             </div>
           )}
-          <MovieList movies={movies} totalResults={totalResults} currentPage={currentPage} />
+          
+          {/* Filter and Sort Controls */}
+          {movies.length > 0 && (
+            <>
+              <FilterControls
+                yearRange={yearRange}
+                onFilterChange={handleFilterChange}
+                totalResults={movies.length}
+                filteredCount={processedMovies.length}
+              />
+              <SortControls
+                sortBy={sortBy}
+                order={sortOrder}
+                onSortChange={handleSortChange}
+              />
+            </>
+          )}
+          
+          <MovieList movies={processedMovies} totalResults={totalResults} currentPage={currentPage} />
+          
+          {/* No results after filtering */}
+          {movies.length > 0 && processedMovies.length === 0 && (
+            <div className="text-center py-12 px-4">
+              <svg className="w-16 h-16 mx-auto mb-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+              </svg>
+              <h3 className="text-xl font-semibold mb-2 text-gray-300">No movies match your filters</h3>
+              <p className="text-gray-400 mb-4">Try adjusting your filter settings</p>
+              <button
+                onClick={() => setYearRange({ min: null, max: null })}
+                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white rounded-lg font-medium transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 active:scale-95"
+              >
+                Clear Filters
+              </button>
+            </div>
+          )}
           
           {/* Pagination */}
           {totalResults > 10 && (

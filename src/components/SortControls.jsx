@@ -4,7 +4,7 @@ export default function SortControls({ sortBy, order, onSortChange }) {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
 
   const sortOptions = [
-    { value: 'dateAdded', label: 'Date Added', orders: ['desc', 'asc'], orderLabels: ['Newest First', 'Oldest First'] },
+    { value: 'relevance', label: 'Relevance', orders: ['desc'], orderLabels: ['Best Match'] },
     { value: 'title', label: 'Title', orders: ['asc', 'desc'], orderLabels: ['A-Z', 'Z-A'] },
     { value: 'year', label: 'Year', orders: ['desc', 'asc'], orderLabels: ['Newest', 'Oldest'] },
   ];
