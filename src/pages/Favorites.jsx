@@ -91,7 +91,7 @@ export default function Favorites() {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 min-h-screen">
       {/* Header Section */}
       <div className="mb-6 sm:mb-8 px-2 sm:px-0">
-        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 flex flex-wrap items-center gap-3">
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold mb-2 flex flex-wrap items-center gap-3 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
           My Favorites
           <span className="bg-blue-600 text-white text-lg sm:text-xl font-semibold px-3 py-1 rounded-full">
             {favorites.length}

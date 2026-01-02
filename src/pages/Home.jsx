@@ -1,7 +1,8 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef } from 'react';
 import { useSearchParams, useNavigate } from 'react-router-dom';
 import SearchBar from '../components/SearchBar';
 import MovieList from '../components/MovieList';
+import MovieCard from '../components/MovieCard';
 import MovieCardSkeleton from '../components/MovieCardSkeleton';
 import Error from '../components/Error';
 import Pagination from '../components/Pagination';
@@ -25,6 +26,13 @@ export default function Home() {
   const [sortBy, setSortBy] = useState('relevance');
   const [sortOrder, setSortOrder] = useState('desc');
   const [yearRange, setYearRange] = useState({ min: null, max: null });
+  
+  // Popular movies for landing page
+  const [popularMovies, setPopularMovies] = useState([]);
+  const [popularLoading, setPopularLoading] = useState(false);
+  const carouselRef = useRef(null);
+  const [isManualScrolling, setIsManualScrolling] = useState(false);
+  const [isHovering, setIsHovering] = useState(false);
 
   // Filter and sort movies
   const processedMovies = useMemo(() => {
@@ -138,6 +146,55 @@ export default function Home() {
     setYearRange({ min: null, max: null });
     setSearchParams({});
   };
+
+  // Carousel navigation handlers
+  const handleScrollLeft = () => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.offsetWidth * 0.8;
+      carouselRef.current.scrollBy({ left: -scrollAmount, behavior: 'smooth' });
+      setIsManualScrolling(true);
+      setTimeout(() => setIsManualScrolling(false), 1000);
+    }
+  };
+
+  const handleScrollRight = () => {
+    if (carouselRef.current) {
+      const scrollAmount = carouselRef.current.offsetWidth * 0.8;
+      carouselRef.current.scrollBy({ left: scrollAmount, behavior: 'smooth' });
+      setIsManualScrolling(true);
+      setTimeout(() => setIsManualScrolling(false), 1000);
+    }
+  };
+
+  // Fetch popular movies on mount
+  useEffect(() => {
+    const fetchPopularMovies = async () => {
+      const popularTitles = ['Inception', 'Interstellar', 'The Dark Knight', 'Avengers', 'The Matrix', 'Titanic', 'Avatar', 'Gladiator'];
+      setPopularLoading(true);
+      
+      try {
+        const API_KEY = import.meta.env.VITE_OMDB_API_KEY;
+        const movies = [];
+        
+        for (const title of popularTitles) {
+          const result = await fetch(`https://www.omdbapi.com/?apikey=${API_KEY}&t=${encodeURIComponent(title)}`);
+          const data = await result.json();
+          if (data.Response === 'True') {
+            movies.push(data);
+          }
+        }
+        
+        setPopularMovies(movies);
+      } catch (error) {
+        console.error('Error fetching popular movies:', error);
+      } finally {
+        setPopularLoading(false);
+      }
+    };
+    
+    fetchPopularMovies();
+  }, []);
+
   // On mount, check for query param and auto-search
   useEffect(() => {
     const q = searchParams.get('q');
@@ -168,7 +225,43 @@ export default function Home() {
 
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 min-h-screen">
-      <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-6 sm:mb-8">Discover Movies</h1>
+      {/* Welcome Hero Section */}
+      {!loading && !error && !hasSearched && (
+        <div className="text-center mb-8 sm:mb-12">
+          {/* Animated Icon */}
+          <div className="mb-6 flex justify-center">
+            <div className="relative">
+              <svg className="w-24 h-24 sm:w-32 sm:h-32 animate-bounce" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="8" y="24" width="48" height="28" rx="4" fill="#6366F1" />
+                <rect x="8" y="16" width="48" height="12" rx="2" fill="#A5B4FC" />
+                <rect x="12" y="18" width="8" height="8" rx="1" fill="#6366F1" />
+                <rect x="24" y="18" width="8" height="8" rx="1" fill="#6366F1" />
+                <rect x="36" y="18" width="8" height="8" rx="1" fill="#6366F1" />
+                <rect x="48" y="18" width="8" height="8" rx="1" fill="#6366F1" />
+                <rect x="16" y="32" width="32" height="12" rx="2" fill="#fff" />
+                <rect x="20" y="36" width="6" height="4" rx="1" fill="#6366F1" />
+                <rect x="30" y="36" width="6" height="4" rx="1" fill="#6366F1" />
+                <rect x="40" y="36" width="6" height="4" rx="1" fill="#6366F1" />
+              </svg>
+              {/* Glow effect */}
+              <div className="absolute inset-0 bg-blue-500/20 blur-3xl animate-pulse"></div>
+            </div>
+          </div>
+
+          {/* Hero Title */}
+          <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradient">
+            Discover Movies
+          </h1>
+          <p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-8 font-light">
+            Your gateway to the world of cinema
+          </p>
+        </div>
+      )}
+      
+      {/* Header for search results */}
+      {hasSearched && (
+        <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-center mb-6 sm:mb-8  bg-gradient-to-r from-blue-400 via-purple-500 to-pink-500 bg-clip-text text-transparent animate-gradien">Discover Movies</h1>
+      )}
       
       <SearchBar onSearch={handleSearch} loading={loading} />
 
@@ -216,37 +309,93 @@ export default function Home() {
         />
       )}
 
-      {/* Welcome State */}
+      {/* Popular Movies Section */}
       {!loading && !error && !hasSearched && (
-        <div className="text-center py-12 px-2 sm:px-0">
+        <div className="px-2 sm:px-0 mt-12">
+          {/* Explore Popular Movies */}
+          <div className="max-w-full mx-auto overflow-hidden">
+            <div className="mb-8 text-center">
+              <div className="inline-flex items-center justify-center gap-3 mb-3">
+                <div className="w-12 h-1 bg-gradient-to-r from-transparent via-yellow-500 to-transparent"></div>
+                <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-white flex items-center gap-2">
+                  {/* <svg className="w-8 h-8 text-yellow-500 animate-pulse" fill="currentColor" viewBox="0 0 20 20">
+                    <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                  </svg> */}
+                  Popular Movies
+                </h2>
+                <div className="w-12 h-1 bg-gradient-to-r from-yellow-500 via-yellow-500 to-transparent"></div>
+              </div>
+              <p className="text-gray-400 text-base sm:text-lg">Click on any movie to discover more details</p>
+            </div>
+            
+            {popularLoading ? (
+              <div className="flex gap-4 sm:gap-6 overflow-x-auto pb-4">
+                {Array.from({ length: 8 }).map((_, index) => (
+                  <div key={index} className="flex-shrink-0 w-48 sm:w-56">
+                    <MovieCardSkeleton />
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <div 
+                className="relative group"
+                onMouseEnter={() => setIsHovering(true)}
+                onMouseLeave={() => setIsHovering(false)}
+              >
+                {/* Left Navigation Arrow */}
+                <button
+                  onClick={handleScrollLeft}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 z-20 bg-gray-900/90 hover:bg-gray-800 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 active:scale-95 shadow-lg backdrop-blur-sm"
+                  aria-label="Scroll left"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
 
-          <div className="mb-4 flex justify-center">
-              <svg className="w-20 h-20 animate-bounce" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="8" y="24" width="48" height="28" rx="4" fill="#6366F1" />
-                <rect x="8" y="16" width="48" height="12" rx="2" fill="#A5B4FC" />
-                <rect x="12" y="18" width="8" height="8" rx="1" fill="#6366F1" />
-                <rect x="24" y="18" width="8" height="8" rx="1" fill="#6366F1" />
-                <rect x="36" y="18" width="8" height="8" rx="1" fill="#6366F1" />
-                <rect x="48" y="18" width="8" height="8" rx="1" fill="#6366F1" />
-                <rect x="16" y="32" width="32" height="12" rx="2" fill="#fff" />
-                <rect x="20" y="36" width="6" height="4" rx="1" fill="#6366F1" />
-                <rect x="30" y="36" width="6" height="4" rx="1" fill="#6366F1" />
-                <rect x="40" y="36" width="6" height="4" rx="1" fill="#6366F1" />
-              </svg>
-          </div>
+                {/* Right Navigation Arrow */}
+                <button
+                  onClick={handleScrollRight}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 z-20 bg-gray-900/90 hover:bg-gray-800 text-white p-3 rounded-full opacity-0 group-hover:opacity-100 transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 active:scale-95 shadow-lg backdrop-blur-sm"
+                  aria-label="Scroll right"
+                >
+                  <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
 
-          <h2 className="text-lg sm:text-xl md:text-2xl lg:text-3xl font-semibold mb-2">Welcome to MovieSearch</h2>
-          <p className="text-gray-400 mb-4 text-xs sm:text-sm md:text-base">
-            Search for your favorite movies above to get started
-          </p>
-          <div className="max-w-md mx-auto bg-gray-900/70 backdrop-blur-md border border-gray-800 rounded-xl p-4 sm:p-6 mt-6 shadow-lg">
-            <p className="text-xs sm:text-sm text-blue-300 mb-2">💡 Tips:</p>
-            <ul className="text-xs sm:text-sm text-gray-300 text-left space-y-1">
-              <li>• Enter at least 3 characters to search</li>
-              <li>• Try searching for "Batman", "Avengers", or "Star Wars"</li>
-              <li>• Click on any movie to see full details</li>
-              <li>• Add movies to your favorites for quick access</li>
-            </ul>
+                {/* Gradient overlays for fade effect */}
+                <div className="absolute left-0 top-0 bottom-0 w-20 bg-gradient-to-r from-[#0a0a23] to-transparent z-10 pointer-events-none"></div>
+                <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#0a0a23] to-transparent z-10 pointer-events-none"></div>
+                
+                {/* Scrolling container */}
+                <div ref={carouselRef} className="overflow-x-auto scrollbar-hide">
+                  <div 
+                    className={`flex gap-4 sm:gap-6 ${!isManualScrolling && !isHovering ? 'animate-scroll-horizontal' : ''}`}
+                    style={isHovering || isManualScrolling ? { animationPlayState: 'paused' } : {}}
+                  >
+                    {/* First set of movies */}
+                    {popularMovies.map((movie) => (
+                      <div key={`first-${movie.imdbID}`} className="flex-shrink-0 w-48 sm:w-56">
+                        <MovieCard movie={movie} />
+                      </div>
+                    ))}
+                    {/* Duplicate set for infinite scroll */}
+                    {popularMovies.map((movie) => (
+                      <div key={`second-${movie.imdbID}`} className="flex-shrink-0 w-48 sm:w-56">
+                        <MovieCard movie={movie} />
+                      </div>
+                    ))}
+                    {/* Third set for smoother infinite scroll */}
+                    {popularMovies.map((movie) => (
+                      <div key={`third-${movie.imdbID}`} className="flex-shrink-0 w-48 sm:w-56">
+                        <MovieCard movie={movie} />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       )}
