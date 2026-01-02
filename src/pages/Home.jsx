@@ -166,6 +166,66 @@ export default function Home() {
     }
   };
 
+  // Handle infinite scroll loop
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel || popularMovies.length === 0) return;
+
+    const handleScroll = () => {
+      const scrollWidth = carousel.scrollWidth;
+      const scrollLeft = carousel.scrollLeft;
+      const clientWidth = carousel.clientWidth;
+      
+      // Calculate the width of one set of movies
+      const oneSetWidth = scrollWidth / 3;
+      
+      // If we've scrolled past 2 sets, jump back to the start of the second set
+      if (scrollLeft >= oneSetWidth * 2) {
+        carousel.scrollLeft = scrollLeft - oneSetWidth;
+      }
+      // If we've scrolled before the first set, jump forward
+      else if (scrollLeft <= 0) {
+        carousel.scrollLeft = oneSetWidth;
+      }
+    };
+
+    carousel.addEventListener('scroll', handleScroll);
+    // Set initial position to middle set
+    carousel.scrollLeft = carousel.scrollWidth / 3;
+
+    return () => carousel.removeEventListener('scroll', handleScroll);
+  }, [popularMovies]);
+
+  // Auto-scroll effect
+  useEffect(() => {
+    const carousel = carouselRef.current;
+    if (!carousel || popularMovies.length === 0) return;
+
+    let animationFrameId;
+    let lastTimestamp = 0;
+    const scrollSpeed = 0.5; // pixels per frame
+
+    const autoScroll = (timestamp) => {
+      if (!lastTimestamp) lastTimestamp = timestamp;
+      const deltaTime = timestamp - lastTimestamp;
+      
+      if (!isHovering && !isManualScrolling && deltaTime > 16) { // ~60fps
+        carousel.scrollLeft += scrollSpeed;
+        lastTimestamp = timestamp;
+      }
+      
+      animationFrameId = requestAnimationFrame(autoScroll);
+    };
+
+    animationFrameId = requestAnimationFrame(autoScroll);
+
+    return () => {
+      if (animationFrameId) {
+        cancelAnimationFrame(animationFrameId);
+      }
+    };
+  }, [popularMovies, isHovering, isManualScrolling]);
+
   // Fetch popular movies on mount
   useEffect(() => {
     const fetchPopularMovies = async () => {
@@ -369,11 +429,12 @@ export default function Home() {
                 <div className="absolute right-0 top-0 bottom-0 w-20 bg-gradient-to-l from-[#0a0a23] to-transparent z-10 pointer-events-none"></div>
                 
                 {/* Scrolling container */}
-                <div ref={carouselRef} className="overflow-x-auto scrollbar-hide">
-                  <div 
-                    className={`flex gap-4 sm:gap-6 ${!isManualScrolling && !isHovering ? 'animate-scroll-horizontal' : ''}`}
-                    style={isHovering || isManualScrolling ? { animationPlayState: 'paused' } : {}}
-                  >
+                <div 
+                  ref={carouselRef} 
+                  className="overflow-x-scroll scrollbar-hide scroll-smooth"
+                  style={{ scrollBehavior: isManualScrolling ? 'smooth' : 'auto' }}
+                >
+                  <div className="flex gap-4 sm:gap-6">
                     {/* First set of movies */}
                     {popularMovies.map((movie) => (
                       <div key={`first-${movie.imdbID}`} className="flex-shrink-0 w-48 sm:w-56">
