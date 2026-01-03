@@ -30,6 +30,11 @@ src/
 │   ├── MovieList.jsx     # Grid of MovieCard components
 │   ├── Loader.jsx        # Loading spinner component
 │   └── Error.jsx         # Error message component
+├── hooks/                # New directory for your custom hooks
+│   ├── useAutocomplete.js    # Logic for search suggestions
+│   ├── useDebounce.js        # Delays API calls until user stops typing
+│   ├── useMovieSearch.js     # Logic for fetching and filtering movies
+│   └── useLocalStorage.js    # Syncs state (like favorites) with browser storage
 ├── pages/
 │   ├── Home.jsx          # Home page with search and movie grid
 │   ├── MovieDetails.jsx  # Detailed movie information page
